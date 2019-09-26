@@ -1,0 +1,156 @@
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="#">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active">Customers</li>
+</ol>
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fas fa-table"></i>
+        List</div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="userDataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>License Key</th>
+                        <th>Active Plan</th>
+                        <th>Send Key</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @customers.each do |customer| %>
+                    <tr class="customer_wrap" data-id="<%= customer.id %>" data-email="<%= customer.email %>">
+                        <td>
+                            <%= customer.email %>
+                        </td>
+                        <td class="plan_license_key">
+                            <% active_plan = customer.get_active_plan %>
+                            <% if active_plan.present? %>
+                            <%= active_plan.license_key %>
+                            <% else %>
+                            NA
+                            <% end %>
+                        </td>
+                        <td class="plan_td">
+                            <% active_plan = customer.get_active_plan %>
+                            <% if active_plan.present? %>
+                            <%= active_plan.plan_name %>
+                            <% else%>
+                            <div class="dropdown dropdown_plans" style="margin-left:10px;">
+                                <button name="button" type="submit" id="choose_plan" data-toggle="dropdown" class="btn btn-primary dropdown-toggle" aria-expanded="false">Choose Plan</button>
+                                <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                                    <% @plans.each_with_index do |plan, index|%>
+                                    <a class="dropdown-item btn btn-primary activate_plan_button" href="javascript:;" data-target="#test" data-id="<%= plan.id %>"><i class="fas fa-money-bill-alt" style="margin-right: 10px;"></i>
+                                        <%= plan.name %></a>
+                                    <% end %>
+                                </div>
+                            </div>
+                            <% end %>
+                        </td>
+                        <td class="send_activation_td">
+                            <% active_plan = customer.get_active_plan %>
+                            <% if active_plan.present? %>
+                            <button name="button" type="submit" class="btn btn-primary send_license_key">
+                                <% if active_plan.is_key_sent %>
+                                    Resend License Key
+                                <% else %>
+                                    Send License Key
+                                <% end %>
+                            </button>
+                            <% else %>
+                            <span class="">Choose Plan first</span>
+                            <% end %>
+                        </td>
+                    </tr>
+                    <% end %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+</div>
+<script>
+$(".activate_plan_button").click(function() {
+    var self = $(this);
+    var customer_id = $(this).closest('tr').data('id');
+    var plan_id = $(this).data('id');
+
+    function onSuccess(data) {
+        if (data['message'] == true) {
+            var customer_tr = $("[data-id=" + $(self).closest('tr').data('id') + "]")
+            customer_tr.find('.plan_license_key').text(data['license_key']);
+            customer_tr.find('.send_activation_td').empty();
+            var tag = "<button name=button type=submit class='btn btn-primary send_license_key'>Send License Key</button>"
+            customer_tr.find('.send_activation_td').append(tag);
+            $(self).closest('td').append($(self).text().trim())
+            $(self).closest('.dropdown_plans').remove();
+            alert("Plan created successfully for customer")
+        } else {
+            alert("Please try again.")
+        }
+    }
+
+    function onError(reponse) {
+        alert("Please try again.");
+    }
+    activate_plan(customer_id, plan_id, onSuccess, onError);
+});
+
+function activate_plan(customer_id, plan_id, successcb, errorcb) {
+    $.ajax({
+        type: "POST",
+        beforeSend: setCsrfToken, // implemented in application.html.erb
+        url: "/activate_plan",
+        data: { customer_id: customer_id, plan_id: plan_id },
+        success: function(data) {
+            if (successcb) successcb(data);
+        },
+        error: function(exception) {
+            if (errorcb) errorcb(exception);
+            // alert(JSON.parse(exception.responseText)['error']);
+        }
+    });
+}
+$(document).ready(function() {
+    // debugger
+    // Turbolinks.clearCache();
+    $('#userDataTable').DataTable({
+        "ordering": false
+    });
+// 
+});
+</script>
+<script data-turbolinks-eval="false">
+$(document).on("click", ".send_license_key", function() {
+    debugger
+    var customer_id = $(this).closest('tr').data('id');
+    var self = this
+    $(this).text('Please Wait');
+    $(this).attr('disabled', true);
+    $.ajax({
+        type: "POST",
+        beforeSend: setCsrfToken,
+        url: "/send_license_key",
+        data: { customer_id: customer_id },
+        success: function(data) {
+            if (data['message'] == true) {
+                alert("License Key successfully sent via email");
+                $(self).removeAttr('disabled');
+                $(self).text('Resend License Key');
+            } else {
+                $(self).text('Send License Key');
+                $(self).removeAttr('disabled');
+            }
+        },
+        error: function(exception) {
+            alert("Please try again.");
+            $(self).text('Send License Key');
+            $(self).removeAttr('disabled');
+        }
+    });
+});
+
+</script>

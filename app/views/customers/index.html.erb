@@ -1,0 +1,87 @@
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="#">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active">Customer Creation</li>
+</ol>
+<%= form_for(@customer, as: :user, url: users_create_customer_path ) do |f| %>
+<%= render "devise/shared/error_messages", resource: @customer %>
+<div class="form-group">
+    <div class="form-label-group">
+        <%= f.text_field :email, autofocus: true, :class => 'form-control', :placeholder => 'Enter Email', :required => 'required' %>
+        <%= f.label :email %>
+    </div>
+</div>
+<div class="form-group">
+    <div class="form-row">
+        <div class="col-md-6">
+            <div class="form-label-group">
+                <%= f.text_field :first_name, autofocus: true, :class => 'form-control', :placeholder => 'First Name', :required => 'required' %>
+                <%= f.label :first_name %>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-label-group">
+                <%= f.text_field :last_name, autofocus: true, :class => 'form-control', :placeholder => 'Last name', :required => 'required' %>
+                <%= f.label :last_name %>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="form-row">
+        <div class="col-md-6">
+            <div class="form-label-group">
+                <%= f.text_field :address, autofocus: true, :class => 'form-control', :placeholder => 'Address', :required => 'required' %>
+                <%= f.label :address %>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-label-group">
+                <%= f.text_field :city, autofocus: true, :class => 'form-control', :placeholder => 'City', :required => 'required' %>
+                <%= f.label :city %>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <div class="form-row">
+        <div class="col-md-6">
+            <div class="form-label-group">
+                <%= f.number_field :phone_number, autofocus: true, :class => 'form-control', :placeholder => 'Phone Number', :required => 'required' %>
+                <%= f.label :phone_number %>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-label-group">
+                <%= f.text_field :country, autofocus: true, :class => 'form-control', :placeholder => 'Country', :required => 'required' %>
+                <%= f.label :country %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="form-row">
+        <div class="col-md-2">
+            Gender
+        </div>
+        <div class="col-md-5">
+            <div class="form-label-group">
+                <%= f.radio_button :gender, 'male', :class => '', :required => 'required' %>
+                Male
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-label-group">
+                <%= f.radio_button :gender, 'female', :class => '', :required => 'required' %>
+                Female
+            </div>
+        </div>
+    </div>
+</div>
+<!-- radio_button_tag(:age, "adult" -->
+<div class="actions form-group">
+    <%= f.submit "Create Customer", :class => 'btn btn-primary btn-block', :id => 'create_customer_button' %>
+</div>
+<% end %>

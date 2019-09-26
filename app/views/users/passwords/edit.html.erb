@@ -1,0 +1,30 @@
+<div class="card card-register mx-auto mt-5">
+    <div class="card-header">Set/Reset password</div>
+    <div class="card-body">
+        <h2>Change your password</h2>
+        <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+        <%= f.hidden_field :reset_password_token %>
+        <div class="form-group">
+            <div class="form-label-group">
+                <%= f.password_field :password, autofocus: true, autocomplete: "new-password", :class => 'form-control', :placeholder => 'Password'%>
+                <% if @minimum_password_length %>
+                <em>(
+                    <%= @minimum_password_length %> characters minimum)</em><br />
+                <% end %>
+                <%= f.label :password, "Password"%><br />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="form-label-group">
+                <%= f.password_field :password_confirmation, autofocus: true, autocomplete: "new-password", :class => 'form-control', :placeholder => 'Confirm Password'%>
+                <%= f.label :password_confirmation, "Confirm Password"%><br />
+            </div>
+        </div>
+        <div class="actions">
+            <%= f.submit "Save password", :class => "btn btn-primary btn-block" %>
+        </div>
+        <% end %>
+        <%= render "users/shared/links" %>
+    </div>
+</div>
