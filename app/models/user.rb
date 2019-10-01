@@ -48,7 +48,16 @@ class User
   # field :locked_at,       type: Time
   def get_active_plan
     # self.active_plans.where(:is_active_plan => true).first
-    self.active_plans.first
+    self.active_plans.where(:status => 'active').first
+  end
+
+  def get_future_plan
+    # self.active_plans.where(:is_active_plan => true).first
+    self.active_plans.where(:status => 'future_plan').first
+  end
+
+  def get_suspend_plan
+    self.active_plans.where(:status => 'suspend').first
   end
 
   protected

@@ -39,7 +39,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   def create_customer
-    debugger
     @user = User.new(params.require(:user).permit(:email,:first_name,:last_name,:address,:city,:phone_number,:country,:gender)) rescue nil
     @user.skip_password_validation = true if @user.present?
     if @user.save

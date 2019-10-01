@@ -15,8 +15,14 @@ Rails.application.routes.draw do
 
     get 'customers/list_customer', to: 'customers#list_customer'
     post 'activate_plan', to: 'customers#activate_plan'
+    post 'activate_deactivate_plan', to: 'customers#activate_deactivate_plan'
+    post 'change_plan_validity', to: 'customers#change_plan_validity'
+
     post 'send_license_key', to: 'customers#send_license_key_to_email'
     get 'customers/create_customer', to: 'customers#index'
+
+    get 'customers/show/:id', to: 'customers#show', as:"customer_show"
+
 
     namespace 'api' do
         namespace 'v1' do

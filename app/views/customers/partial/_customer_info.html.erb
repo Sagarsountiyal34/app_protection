@@ -1,0 +1,22 @@
+<div class="card mb-3">
+    <div class="card-header">
+        <span class="title"><b>Customer Name</b></span>
+        <span id="name" style="float:right;">
+            <%= @customer.first_name + ' ' + @customer.last_name%></span>
+    </div>
+    <div class="card-header">
+        <span class="title"><b>Email</b></span>
+        <span id="email" style="float:right;">
+            <%= @customer.email %></span>
+    </div>
+    <div class="card-header">
+        <span class="title"><b>Phone Number</b></span>
+        <span id="email" style="float:right;">
+            <%= @customer.phone_number%></span>
+    </div>
+    <div class="card-header">
+        <span class="title"><b>Address</b></span>
+        <span id="city" style="float:right;">
+            <%= @customer.address + ' , ' + @customer.city%></span>
+    </div>
+</div>

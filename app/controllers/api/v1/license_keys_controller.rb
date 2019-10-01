@@ -3,18 +3,18 @@ module Api
 		class LicenseKeysController < ApiController
 			
 			def check_license_key_validity
-				debugger
 				begin
 					license_key = params[:license_key]
 					mac_address = params[:mac_address]
 					if license_key.present? and mac_address.present?
-						debugger
 						active_plan = ActivePlan.find_by(:license_key => license_key)
 						if active_plan.present? and active_plan.mac_address.present? and active_plan.mac_address != mac_address
 							render_not_found("This key is already in used  by some other devise.")
 						elsif active_plan.present?
 							active_plan.mac_address = mac_address
-							if active_plan.save
+							if active_plan.is_expired?
+								render status: "200", json:{ message: "Plan has been expired.", status: false}
+							elsif active_plan.save
 								render status: "200", json: { message: "Success", status: true }
 							else
 								render_not_found

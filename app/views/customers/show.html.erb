@@ -1,0 +1,108 @@
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="#">Customer</a>
+    </li>
+    <li class="breadcrumb-item active">
+        <%= @customer.first_name + ' ' + @customer.last_name %>
+    </li>
+</ol>
+<div class="card mb-3">
+    <div class="card-header">
+        Customer Info</div>
+    <div class="card-body">
+        <div class="table-responsive customer_table_wrap">
+            <%= render "customers/partial/customer_info" %>
+        </div>
+    </div>
+</div>
+<div class="card mb-3">
+    <div class="card-header">
+        Customer Plans</div>
+    <div class="card-body">
+        <div class="table-responsive customer_plan_wrap" id="customer_plans" data-id="<%= @customer.id %>">
+            <%= render "customers/partial/customer_plan" %>
+        </div>
+    </div>
+</div>
+<script data-turbolinks-eval="false">
+$(document).on("click", ".activate_future_plan_button", function() {
+    if (confirm('Are you sure you want to Activate this plan for future?')) {
+        var self = $(this);
+        var customer_id = $('#customer_plans').data('id');
+        var plan_id = $(this).data('id');
+        $(this).parents('.dropdown_plans').find('.future_plan').attr('disabled', 'true');
+
+        function onSuccess(data) {
+            if (data != null) {
+                $('#customer_plans').html(data);
+                alert("Plan created successfully")
+            } else {
+                $(this).parents('.dropdown_plans').find('.future_plan').removeAttr('disabled');
+                alert("Please try again.")
+            }
+        }
+
+        function onError(reponse) {
+            $(this).parents('.dropdown_plans').find('.future_plan').removeAttr('disabled');
+            alert("Please try again.");
+        }
+        activate_plan_for_future(customer_id, plan_id, onSuccess, onError);
+    }
+});
+
+function activate_plan_for_future(customer_id, plan_id, successcb, errorcb) {
+    $.ajax({
+        type: "POST",
+        beforeSend: setCsrfToken, // implemented in application.html.erb
+        url: "/activate_plan",
+        data: { id: customer_id, plan_id: plan_id, origin: 'future' },
+        success: function(data) {
+            if (successcb) successcb(data);
+        },
+        error: function(exception) {
+            if (errorcb) errorcb(exception);
+        }
+    });
+}
+
+$(document).on("click", ".change_validity_button", function() {
+    if (confirm('Are you sure you want to change validity?')) {
+        var customer_id = $('#customer_plans').data('id');
+        var new_plan_id = $(this).data('id');
+        var active_plan_id = $(this).closest('.customer_plan').data('id');
+        var self = this;
+        $(this).parents('.dropdown_plans').find('.change_validity_plan').attr('disabled', 'true');
+        function onSuccess(data) {
+            if (data['message'] != null) {
+                $(self).parents('.dropdown_plans').find('.change_validity_plan').removeAttr('disabled');
+                alert(data['message']);
+            } else if (data != null) {
+                $('#customer_plans').html(data);
+                alert("Plan changed successfully.")
+            }
+        }
+
+        function onError(reponse) {
+            $(self).parents('.dropdown_plans').find('.change_validity_plan').removeAttr('disabled');
+            alert("Please try again.");
+        }
+        change_validity_of_plan(customer_id, new_plan_id, active_plan_id, onSuccess, onError);
+    }
+});
+
+function change_validity_of_plan(customer_id, new_plan_id, active_plan_id, successcb, errorcb) {
+    $.ajax({
+        type: "POST",
+        beforeSend: setCsrfToken, // implemented in application.html.erb
+        url: "/change_plan_validity",
+        data: { id: customer_id, current_plan_id: active_plan_id, new_plan_id: new_plan_id },
+        success: function(data) {
+            if (successcb) successcb(data);
+        },
+        error: function(exception) {
+            if (errorcb) errorcb(exception);
+        }
+    });
+}
+</script>
