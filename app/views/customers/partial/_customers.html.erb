@@ -1,19 +1,16 @@
-<table class="table table-bordered" id="userDataTable" width="100%" cellspacing="0">
+<table class="table table-bordered" id="customersDataTable" width="100%" cellspacing="0">
     <thead>
         <tr>
             <th>Email</th>
             <th>Name </th>
             <th>Phone Number</th>
-            <th>License Key</th>
-            <th>Active Plan</th>
-            <th>Send Key</th>
             <th>Suspend/Resume</th>
             <th>Manage Plan</th>
         </tr>
     </thead>
     <tbody>
         <% @customers.each do |customer| %>
-        <tr class="customer_wrap" data-id="<%= customer.id %>" data-email="<%= customer.email %>">
+        <tr data-id="<%= customer.id %>" data-email="<%= customer.email %>">
             <td>
                 <%= customer.email %>
             </td>
@@ -23,55 +20,16 @@
             <td>
                 <%= customer.phone_number %>
             </td>
-            <td class="plan_license_key">
-                <% active_plan = customer.get_active_plan %>
-                <% if active_plan.present? %>
-                <span class="secret_key_token" style="cursor: pointer;" data-toggle="tooltip" title="Click to copy">
-                    <%= active_plan.license_key %></span>
-                <% else %>
-                NA
-                <% end %>
-            </td>
-            <td class="plan_td">
-                <% active_plan = customer.get_active_plan %>
-                <% if active_plan.present? %>
-                <span class="plan_name">
-                    <%= active_plan.plan_name %></span>
-                <% else %>
-                <div class="dropdown dropdown_plans">
-                    <button name="button" type="submit" data-toggle="dropdown" class="btn btn-primary dropdown-toggle choose_plan" aria-expanded="false">Choose Plan</button>
-                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
-                        <% @plans.each_with_index do |plan, index|%>
-                        <a class="dropdown-item btn btn-primary activate_plan_button" href="javascript:;" data-target="#test" data-id="<%= plan.id %>"><i class="fas fa-money-bill-alt" style="margin-right: 10px;"></i>
-                            <%= plan.name %></a>
-                        <% end %>
-                    </div>
-                </div>
-                <% end %>
-            </td>
-            <td class="send_activation_td">
+            <td>
                 <% active_plan = customer.get_active_plan %>
                 <% suspend_plan = customer.get_suspend_plan%>
                 <% if active_plan.present? %>
-                <button name="button" type="submit" class="btn btn-primary send_license_key">
-                    <% if active_plan.is_key_sent %>
-                    Resend License Key
-                    <% else %>
-                    Send License Key
-                    <% end %>
-                </button>
-                <% else %>
-                <span class="">Choose Plan first</span>
-                <% end %>
-            </td>
-            <td class="is_plan_active">
-                <% if active_plan.present? %>
-                <button name="button" type="submit" class="btn btn-primary activate_deactivate_plan" data-is-active=true data-id="<%= active_plan.id %>">
-                    Deactivate
+                <button name="button" type="submit" class="btn btn-primary suspend_resume_plan" data-is-active=true data-id="<%= active_plan.id %>">
+                    Suspend
                 </button>
                 <% elsif suspend_plan.present? %>
-                <button name="button" type="submit" class="btn btn-primary activate_deactivate_plan" data-is-active=false data-id="<%= suspend_plan.id %>">
-                    Activate
+                <button name="button" type="submit" class="btn btn-primary suspend_resume_plan" data-is-active=false data-id="<%= suspend_plan.id %>">
+                    Resume
                 </button>
                 <% else %>
                 NA

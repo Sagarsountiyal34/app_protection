@@ -1,11 +1,14 @@
-<table class="table table-bordered" id="userDataTable" width="100%" cellspacing="0">
+<% if @customer.active_plans.present? %>
+<table class="table table-bordered" id="customerDataTable" width="100%" cellspacing="0">
     <thead>
         <tr>
             <th>Plan Name</th>
+            <th>license key </th>
             <th>Status</th>
             <th>Start Date</th>
             <th>End Date</th>
             <th>Change Validity</th>
+            <th>Send key</th>
         </tr>
     </thead>
     <tbody>
@@ -15,36 +18,59 @@
                 <%= plan.plan_name %>
             </td>
             <td>
+                <%= plan.license_key %>
+            </td>
+            <td>
                 <%= plan.status.capitalize %>
             </td>
             <td>
-                <%= plan.start_date.strftime("%d %B %Y , %l:%M %p") %>
+                <%= plan.start_date.strftime("%d %B %Y %l:%M %p") %>
             </td>
             <td>
-                <%= plan.end_date.strftime("%d %B %Y , %l:%M %p") %>
+                <%= plan.end_date.strftime("%d %B %Y %l:%M %p") %>
             </td>
             <td>
                 <% if plan.status != 'active' %>
                 <span>NA</span>
                 <% else %>
-                <div class="dropdown dropdown_plans" style="margin-left:10px;">
-                    <button name="button" type="submit" data-toggle="dropdown" class="btn btn-primary dropdown-toggle change_validity_plan" aria-expanded="false">Choose Plan</button>
+                <div class="dropdown change_validity_dropdown_plans" style="margin-left:10px;">
+                    <button name="button" type="submit" data-toggle="dropdown" class="btn btn-primary dropdown-toggle change_validity_button" aria-expanded="false">Choose Plan</button>
                     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
                         <% @plans.each_with_index do |plan, index|%>
                         <% next if plan.id.to_s == @active_plan.plan_id.to_s %>
-                        <a class="dropdown-item btn btn-primary change_validity_button" href="javascript:;" data-target="#test" data-id="<%= plan.id %>"><i class="fas fa-money-bill-alt" style="margin-right: 10px;"></i>
+                        <a class="dropdown-item btn btn-primary change_validity" href="javascript:;" data-target="#test" data-id="<%= plan.id %>"><i class="fas fa-money-bill-alt" style="margin-right: 10px;"></i>
                             <%= plan.name %></a>
                         <% end %>
                     </div>
                 </div>
                 <% end %>
             </td>
+            <td>
+                <% if plan.status == 'active' or plan.status == 'future_plan' %>
+                <button name="button" type="submit" class="btn btn-primary send_license_key" data-id="<%= plan.id.to_s %>">
+                    <% if plan.is_key_sent %>
+                    Resend License Key
+                    <% else %>
+                    Send License Key
+                    <% end %>
+                </button>
+                <% else %>
+                NA
+                <% end %>
+            </td>
         </tr>
         <% end %>
     </tbody>
 </table>
-<% if @future_plan.present? == false %>
-<div class="dropdown dropdown_plans" style="margin-left:10px;">
+<% else %>
+<div class="card mb-3">
+    <div class="card-header">
+        <span class="title"><b>Customer does not have any plan</b></span>
+    </div>
+</div>
+<% end%>
+<% if @future_plan.present? == false or @active_plan.present? == false %>
+<div class="dropdown future_dropdown_plans" style="margin-left:10px;">
     <button name="button" type="submit" data-toggle="dropdown" class="btn btn-primary dropdown-toggle future_plan" aria-expanded="false">
         <% if @active_plan.present? %>
         Add Plan for future
@@ -54,7 +80,7 @@
     </button>
     <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
         <% @plans.each_with_index do |plan, index|%>
-        <a class="dropdown-item btn btn-primary activate_future_plan_button" href="javascript:;" data-target="#test" data-id="<%= plan.id %>"><i class="fas fa-money-bill-alt" style="margin-right: 10px;"></i>
+        <a class="dropdown-item btn btn-primary activate_future_plan" href="javascript:;" data-target="#test" data-id="<%= plan.id %>"><i class="fas fa-money-bill-alt" style="margin-right: 10px;"></i>
             <%= plan.name %></a>
         <% end %>
     </div>

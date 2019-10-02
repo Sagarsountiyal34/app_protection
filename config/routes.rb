@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-	root to: "customers#list_customer"
+	root to: "customers#list"
 	# devise_for :users
 	# For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
     Rails.application.routes.draw do
@@ -13,9 +13,9 @@ Rails.application.routes.draw do
         end
     end
 
-    get 'customers/list_customer', to: 'customers#list_customer'
+    get 'customers/list', to: 'customers#list'
     post 'activate_plan', to: 'customers#activate_plan'
-    post 'activate_deactivate_plan', to: 'customers#activate_deactivate_plan'
+    post 'suspend_resume_plan', to: 'customers#suspend_resume_plan'
     post 'change_plan_validity', to: 'customers#change_plan_validity'
 
     post 'send_license_key', to: 'customers#send_license_key_to_email'

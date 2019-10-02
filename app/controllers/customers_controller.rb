@@ -1,13 +1,23 @@
 class CustomersController < ApplicationController
+	before_action :set_desired_field
+	def set_desired_field
+		if params[:id].present?
+        	@customer = User.includes(:active_plans).find(params[:id])
+      	end
+      	if params[:cust_plan_id].present?
+      		@cust_plan = ActivePlan.find(params[:cust_plan_id])
+      	end
+      	if params[:plan_id].present?
+      		@plan = Plan.find(params[:plan_id])
+      	end
+	end
+
 	def index
 		@customer = User.new
 	end
 
-	def list_customer
-		@customers = User.where(role: 'customer')
-		# @users = User.includes(:active_plans).find_by(id: '5d8867ca58e53d38e2824ef1')
-		@plans = Plan.all
-
+	def list
+		get_details_of_customers
 	end
 
 	def show
@@ -15,22 +25,20 @@ class CustomersController < ApplicationController
 	end
 
 	def activate_plan
-		plan = Plan.find(params['plan_id'])
-		customer = User.find(params['id'])
 		license_key = get_license_key
-		active_plan = customer.get_active_plan
+		active_plan = @customer.get_active_plan
 		if active_plan.present?
-			# message = customer.get_future_plan.present? ? 'Future Plan Already present' : ''
 			start_date = active_plan.end_date
-			end_date = plan.get_end_date_from_active_plan(active_plan)
-			activated_plan = customer.active_plans.create(:plan_id => params['plan_id'], :plan_name => plan.name, :license_key => license_key, :status => 'future_plan', :start_date => start_date, :end_date => end_date) rescue nil
+			end_date = @plan.get_end_date_from_active_plan(active_plan)
+			activated_plan = @customer.active_plans.create(:plan_id => params['plan_id'], :plan_name => @plan.name, :license_key => license_key, :status => 'future_plan', :start_date => start_date, :end_date => end_date) rescue nil
 		else
 			start_date = Time.now
-			end_date = plan.get_end_date_from_now
-			activated_plan = customer.active_plans.create(:plan_id => params['plan_id'], :plan_name => plan.name, :license_key => license_key, :status => 'active', :start_date => start_date, :end_date => end_date) rescue nil
+			end_date = @plan.get_end_date_from_now
+			activated_plan = @customer.active_plans.create(:plan_id => params['plan_id'], :plan_name => @plan.name, :license_key => license_key, :status => 'active', :start_date => start_date, :end_date => end_date) rescue nil
 		end
-		if plan.present? and activated_plan.present? and end_date.present?
+		if @plan.present? and activated_plan.present?
 			if activated_plan.status == 'future_plan' or  params['origin'] == 'future'
+				@customer = User.includes(:active_plans).find(params[:id])
 				get_details_for_customer_page
 				render partial: 'customers/partial/customer_plan'
 			else
@@ -45,23 +53,20 @@ class CustomersController < ApplicationController
 	end
 
 	def send_license_key_to_email
-		customer = User.find(params[:customer_id])
-		active_plan = customer.get_active_plan rescue ""
 		error = nil
-		# also update status to suspend
-		if customer.present? and active_plan.present?
+		if @customer.present? and @cust_plan.present?
 			begin
-				GmailMailer.license_key_email(customer, active_plan.license_key).deliver
-				active_plan.update_attribute('is_key_sent', true)
+				GmailMailer.license_key_email(@customer, @cust_plan.license_key).deliver
+				@cust_plan.update_attribute('is_key_sent', true)
 			rescue Exception => e
 				error = "Please try Again." + e.message
 			end
 		else
-			error = "User does not have a active plan.activate plan first"
+			error = "User does not have a plan.activate any plan first"
 		end
 		if error.present? == false
 			render json: {	message: true,
-				plan_id: active_plan.id.to_s
+				plan_id: @cust_plan.id.to_s
 			}.to_json, status: 200
 		else
 			render json: {
@@ -70,13 +75,10 @@ class CustomersController < ApplicationController
 		end
 	end
 
-	def activate_deactivate_plan
+	def suspend_resume_plan
 		status =  to_boolean(params[:is_active]) ? 'suspend' : 'active' 
-		if ActivePlan.find(params[:plan_id]).update_attribute('status', status)
-			@customers = User.where(role: 'customer')
-			# @users = User.includes(:active_plans).find_by(id: '5d8867ca58e53d38e2824ef1')
-			@plans = Plan.all
-			# render json: { message: true }.to_json, status: 200
+		if @cust_plan.present? and @cust_plan.update_attribute('status', status)
+			get_details_of_customers
 			render partial: 'customers/partial/customers'
 		else
 			render json: { message: false }.to_json, status: 200
@@ -84,14 +86,12 @@ class CustomersController < ApplicationController
 	end
 
 	def change_plan_validity
-		customer = User.find(params[:id])
-		if customer.get_future_plan.present?
+		if @customer.get_future_plan.present?
 			render json: { message: "Customer has future plan setup.validity can't be extend.", status: false }.to_json, status: 200
 		else
-			current_plan = ActivePlan.find(params[:current_plan_id])
-			new_plan = Plan.find(params[:new_plan_id])
-			end_date = new_plan.get_end_date_for_change_validity(current_plan)
-			if current_plan.update_attributes(:plan_name => new_plan.name, :plan_id => new_plan.id.to_s, :end_date => end_date)
+			end_date = @plan.get_end_date_for_change_validity(@cust_plan)
+			if @cust_plan.update_attributes(:plan_name => @plan.name, :plan_id => @plan.id.to_s, :end_date => end_date)
+				@customer = User.includes(:active_plans).find(params[:id])
 				get_details_for_customer_page
 				render partial: 'customers/partial/customer_plan'
 			else
@@ -112,9 +112,13 @@ class CustomersController < ApplicationController
 	end
 
 	def get_details_for_customer_page
-		@customer = User.includes(:active_plans).find(params[:id])
 		@plans = Plan.all
 		@active_plan = @customer.get_active_plan
 		@future_plan = @customer.get_future_plan
+	end
+
+	def get_details_of_customers
+		@customers = User.where(role: 'customer')
+		@plans = Plan.all
 	end
 end

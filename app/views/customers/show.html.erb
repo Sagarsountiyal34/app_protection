@@ -20,13 +20,22 @@
     <div class="card-header">
         Customer Plans</div>
     <div class="card-body">
-        <div class="table-responsive customer_plan_wrap" id="customer_plans" data-id="<%= @customer.id %>">
+        <div class="table-responsive" id="customer_plans" data-id="<%= @customer.id %>">
             <%= render "customers/partial/customer_plan" %>
         </div>
     </div>
 </div>
 <script data-turbolinks-eval="false">
-$(document).on("click", ".activate_future_plan_button", function() {
+$(document).ready(function() {
+    initialize_customer_dataTable();
+});
+
+function initialize_customer_dataTable() {
+    $('#customerDataTable').DataTable({
+        "ordering": false
+    });
+}
+$(document).on("click", ".activate_future_plan", function() {
     if (confirm('Are you sure you want to Activate this plan for future?')) {
         var self = $(this);
         var customer_id = $('#customer_plans').data('id');
@@ -36,6 +45,7 @@ $(document).on("click", ".activate_future_plan_button", function() {
         function onSuccess(data) {
             if (data != null) {
                 $('#customer_plans').html(data);
+                initialize_customer_dataTable();
                 alert("Plan created successfully")
             } else {
                 $(this).parents('.dropdown_plans').find('.future_plan').removeAttr('disabled');
@@ -66,25 +76,27 @@ function activate_plan_for_future(customer_id, plan_id, successcb, errorcb) {
     });
 }
 
-$(document).on("click", ".change_validity_button", function() {
+$(document).on("click", ".change_validity", function() {
     if (confirm('Are you sure you want to change validity?')) {
         var customer_id = $('#customer_plans').data('id');
         var new_plan_id = $(this).data('id');
         var active_plan_id = $(this).closest('.customer_plan').data('id');
         var self = this;
-        $(this).parents('.dropdown_plans').find('.change_validity_plan').attr('disabled', 'true');
+        $(this).parents('.change_validity_dropdown_plans').find('.change_validity_button').attr('disabled', 'true');
+
         function onSuccess(data) {
             if (data['message'] != null) {
-                $(self).parents('.dropdown_plans').find('.change_validity_plan').removeAttr('disabled');
+                $(self).parents('.change_validity_dropdown_plans').find('.change_validity_button').removeAttr('disabled');
                 alert(data['message']);
             } else if (data != null) {
                 $('#customer_plans').html(data);
+                initialize_customer_dataTable();
                 alert("Plan changed successfully.")
             }
         }
 
         function onError(reponse) {
-            $(self).parents('.dropdown_plans').find('.change_validity_plan').removeAttr('disabled');
+            $(self).parents('.change_validity_dropdown_plans').find('.change_validity_button').removeAttr('disabled');
             alert("Please try again.");
         }
         change_validity_of_plan(customer_id, new_plan_id, active_plan_id, onSuccess, onError);
@@ -96,7 +108,51 @@ function change_validity_of_plan(customer_id, new_plan_id, active_plan_id, succe
         type: "POST",
         beforeSend: setCsrfToken, // implemented in application.html.erb
         url: "/change_plan_validity",
-        data: { id: customer_id, current_plan_id: active_plan_id, new_plan_id: new_plan_id },
+        data: { id: customer_id, cust_plan_id: active_plan_id, plan_id: new_plan_id },
+        success: function(data) {
+            if (successcb) successcb(data);
+        },
+        error: function(exception) {
+            if (errorcb) errorcb(exception);
+        }
+    });
+}
+
+$(document).on("click", ".send_license_key", function() {
+    var customer_id = $('#customer_plans').data('id');
+    var plan_id = $(this).data('id');
+    var self = this
+    $(this).text('Please Wait');
+    $(this).attr('disabled', true);
+    $.ajax({
+        type: "POST",
+        beforeSend: setCsrfToken,
+        url: "/send_license_key",
+        data: { id: customer_id, cust_plan_id: plan_id },
+        success: function(data) {
+            if (data['message'] == true) {
+                alert("License Key successfully sent via email");
+                $(self).removeAttr('disabled');
+                $(self).text('Resend Key');
+            } else {
+                $(self).text('Send Key');
+                $(self).removeAttr('disabled');
+            }
+        },
+        error: function(exception) {
+            alert("Please try again.");
+            $(self).text('Send Key');
+            $(self).removeAttr('disabled');
+        }
+    });
+});
+
+function activate_plan(customer_id, plan_id, successcb, errorcb) {
+    $.ajax({
+        type: "POST",
+        beforeSend: setCsrfToken, // implemented in application.html.erb
+        url: "/activate_plan",
+        data: { id: customer_id, plan_id: plan_id },
         success: function(data) {
             if (successcb) successcb(data);
         },
@@ -106,3 +162,12 @@ function change_validity_of_plan(customer_id, new_plan_id, active_plan_id, succe
     });
 }
 </script>
+<style>
+table {
+    /*margin: 0 auto;
+  width: 100%;
+  clear: both;
+  border-collapse: collapse;*/
+    table-layout: fixed;
+}
+</style>

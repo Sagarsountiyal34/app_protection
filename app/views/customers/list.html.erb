@@ -1,0 +1,74 @@
+<!-- Breadcrumbs-->
+<ol class="breadcrumb">
+    <li class="breadcrumb-item">
+        <a href="#">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item active">Customers</li>
+</ol>
+<div class="card mb-3">
+    <div class="card-header">
+        <i class="fas fa-table"></i>
+        List</div>
+    <div class="card-body">
+        <div class="table-responsive customer_table_wrap">
+            <%= render "customers/partial/customers" %>
+        </div>
+    </div>
+    <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+</div>
+<script data-turbolinks-eval="false">
+$(document).ready(function() {
+    $('#customersDataTable').DataTable({
+        "ordering": false
+    });
+    // 
+});
+
+$(document).on("click", ".suspend_resume_plan", function() {
+    var customer_id = $(this).closest('tr').data('id');
+    var plan_id = $(this).data('id');
+    var is_active = $(this).data('isActive');
+    $(this).text('Please Wait');
+    $(this).attr('disabled', true);
+
+    function onSuccess(data) {
+        if (data != null) {
+            $('.customer_table_wrap').html(data);
+            $('#customersDataTable').DataTable({
+                "ordering": false
+            });
+        } else {
+            alert("Please try again.")
+        }
+    }
+
+    function onError(reponse) {
+        alert("Please try again.");
+    }
+    suspend_resume_plan(plan_id, is_active, onSuccess, onError)
+});
+
+function suspend_resume_plan(plan_id, is_active, successcb, errorcb) {
+    $.ajax({
+        type: "POST",
+        beforeSend: setCsrfToken,
+        url: "/suspend_resume_plan",
+        data: { is_active: is_active, cust_plan_id: plan_id },
+        success: function(data) {
+            if (successcb) successcb(data);
+        },
+        error: function(exception) {
+            if (successcb) successcb(data);
+        }
+    });
+}
+</script>
+<style>
+table {
+    /*margin: 0 auto;
+  width: 100%;
+  clear: both;
+  border-collapse: collapse;*/
+    table-layout: fixed;
+}
+</style>
