@@ -1,7 +1,6 @@
 module Api
 	module V1
 		class LicenseKeysController < ApiController
-			
 			def check_license_key_validity
 				begin
 					license_key = params[:license_key]
@@ -20,7 +19,7 @@ module Api
 									status = true
 								end
 								if active_plan.is_expired?
-									render_not_found('Plan has been expired.')
+									render status: "200", json: { message: "Plan has been expired.", status: false }
 								elsif status
 									render status: "200", json: { message: "Success", status: true }
 								else
@@ -41,7 +40,7 @@ module Api
 
 			private
 			def render_not_found(message="Something is wrong.")
-				render status: 500, json: { message: message, status: false }
+				render status: 404, json: { message: message, status: false }
 			end
 
 			def render500(message="Something went wrong. Please try again after sometime.")

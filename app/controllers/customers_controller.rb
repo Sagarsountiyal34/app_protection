@@ -47,7 +47,6 @@ class CustomersController < ApplicationController
 		else
 			render json: { message: false }, status: 500
 		end
-		 # u=User.includes(:active_plans).find_by(id: '5d8867ca58e53d38e2824ef1')
 	end
 
 	def send_license_key_to_email

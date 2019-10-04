@@ -41,16 +41,19 @@ $(document).on("click", ".activate_future_plan", function() {
             if (data != null) {
                 $('#customer_plans').html(data);
                 // initialize_customer_dataTable();
-                alert("Plan created successfully")
+                // alert("Plan created successfully");
+                notification('Plan created successfully', 'info');
             } else {
                 $(this).parents('.future_dropdown_plans').find('.future_plan').removeAttr('disabled');
-                alert("Please try again.")
+                // alert("Please try again.");
+                notification("Please try again.", "error");
             }
         }
 
         function onError(reponse) {
             $(this).parents('.future_dropdown_plans').find('.future_plan').removeAttr('disabled');
-            alert("Please try again.");
+            // alert("Please try again.");
+            notification("Please try again.", "error");
         }
         activate_plan_for_future(customer_id, plan_id, onSuccess, onError);
     }
@@ -78,21 +81,24 @@ $(document).on("click", ".change_validity", function() {
         var active_plan_id = $(this).closest('.customer_plan').data('id');
         var self = this;
         $(this).parents('.change_validity_dropdown_plans').find('.change_validity_button').attr('disabled', 'true');
-
         function onSuccess(data) {
             if (data['message'] != null) {
                 $(self).parents('.change_validity_dropdown_plans').find('.change_validity_button').removeAttr('disabled');
-                alert(data['message']);
+                // alert(data['message']);
+                notification(data['message'], "warn");
             } else if (data != null) {
                 $('#customer_plans').html(data);
                 // initialize_customer_dataTable();
-                alert("Plan changed successfully.")
+                // alert("Plan changed successfully.");
+                notification("Plan changed successfully.", "info");
             }
         }
 
         function onError(reponse) {
             $(self).parents('.change_validity_dropdown_plans').find('.change_validity_button').removeAttr('disabled');
-            alert("Please try again.");
+            // alert("Please try again.");
+            notification("Please try again.", "info");
+
         }
         change_validity_of_plan(customer_id, new_plan_id, active_plan_id, onSuccess, onError);
     }
@@ -127,16 +133,19 @@ $(document).on("click", ".send_license_key", function() {
             data: { id: customer_id, cust_plan_id: plan_id },
             success: function(data) {
                 if (data['message'] == true) {
-                    alert("License Key successfully sent via email");
+                    // alert("License Key successfully sent via email");
+                    notification("License Key successfully sent via email", "info");
                     $(self).removeAttr('disabled');
                     $(self).text('Resend License key to Email');
                 } else {
+                    notification("Please try again.", "error");
                     $(self).text('Send License key to Email');
                     $(self).removeAttr('disabled');
                 }
             },
             error: function(exception) {
-                alert("Please try again.");
+                // alert("Please try again.");
+                notification("Please try again.", "error");
                 $(self).text('Send License key to Email');
                 $(self).removeAttr('disabled');
             }
@@ -160,13 +169,14 @@ function activate_plan(customer_id, plan_id, successcb, errorcb) {
 }
 
 $(document).on("click", ".license_key", function() {
-    var value = $(this).text();
+    var value = $(this).text().trim();
     var temp = $("<input>");
     $("body").append(temp);
     temp.val(value).select();
     document.execCommand("copy");
     temp.remove();
-    alert("License key copied");
+    notification("License key copied.", "info");
+
 });
 
 // $(document).ready(function() {
@@ -183,13 +193,16 @@ $(document).on("click", ".suspend_resume_plan_customer", function() {
     function onSuccess(data) {
         if (data != null) {
             $('#customer_plans').html(data);
+            notification("Plan status has been changed.", "info");
         } else {
-            alert("Please try again.")
+            // alert("Please try again.");
+            notification("Please try again.", "error");
         }
     }
 
     function onError(reponse) {
-        alert("Please try again.");
+        // alert("Please try again.");
+        notification("Please try again.", "error");
     }
     suspend_resume_plan_customer(customer_id, plan_id, is_active, onSuccess, onError)
 });

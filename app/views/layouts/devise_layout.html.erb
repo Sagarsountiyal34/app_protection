@@ -1,69 +1,60 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Symplii</title>
-
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-  </head>
+</head>
 
-  <body class="bg-dark">
-  	<% if user_signed_in? %>
-      <%= link_to('Log Out', destroy_user_session_path, method: :delete) %>
+<body class="bg-dark">
+    <% if user_signed_in? %>
+    <%= link_to('Log Out', destroy_user_session_path, method: :delete) %>
     <% end %>
     <div class="container">
-      <div class="card card-login mx-auto mt-5">
-        <%= yield %>
-      </div>
+        <div class="card card-login mx-auto mt-5">
+            <%= yield %>
+        </div>
     </div>
     <script>
-      <% if flash[:notice].present? %>
-        message = "<%= flash[:notice]%>"
-        type = 'success'
-        notification(message,type)
-      <%end%>
+    <% if flash[:notice].present? %>
+    notification("<%= flash[:notice] %>", 'message')
+    <%end%>
 
-      <% if flash[:alert].present? %>
-        message = "<%= flash[:alert]%>"
-        type = 'warn'
-        notification(message,type)
-      <%end%>
+    <% if flash[:alert].present? %>
+    notification("<%= flash[:alert] %>", 'warn')
+    <%end%>
 
-      <% if flash[:message].present?%>
-        message = "<%= flash[:message]%>"
-        type = 'info'
-        notification(message,type)
-      <%end%>
+    <% if flash[:message].present?%>
+    notification("<%= flash[:message] %>", 'info')
+    <%end%>
 
-      <% if flash[:errors].present?%>
-        <% if flash[:errors].class == Array %>
-          <%flash[:errors].each do |err|%>
-            message = "<%= err.html_safe %>"
-            type = 'error'
-            notification(message,type)
-          <%end%>
-        <% else %>
-          message = "<%= flash[:errors] %>"
-          type = 'error'
-          notification(message,type)
-        <% end %>        
-      <% end %>
+    <% if flash[:errors].present?%>
+    <% if flash[:errors].class == Array %>
+    <%flash[:errors].each do |err|%>
+    notification("<%= err.html_safe %>", 'error')
+    <%end%>
+    <% else %>
+    type = 'error'
+    notification("<%= flash[:errors] %>", 'error')
+    <% end %>
+    <% end %>
 
-      function notification(message,type){
+    function notification(message, type) {
         $.notify(message, {
-          className:type,
-          clickToHide: false,
-          globalPosition: 'top center',
-          autoHideDelay: 3000
+            className: type,
+            clickToHide: false,
+            globalPosition: 'top center',
+            autoHideDelay: 3000
         });
-      }
+    }
     </script>
-  </body>
+</body>
+
 </html>

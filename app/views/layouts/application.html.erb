@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>AppProtection</title>
     <%= csrf_meta_tags %>
@@ -7,6 +8,7 @@
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= yield :page_scripts %>
 </head>
 
 <body id="page-top">
@@ -34,7 +36,7 @@
         <!-- Sidebar -->
         <ul class="sidebar navbar-nav">
             <li class="nav-item active">
-                <a class="nav-link" href="<%= root_path %>" >
+                <a class="nav-link" href="<%= root_path %>">
                     <i class="fas fa-users"></i>
                     <span>Customers</span>
                 </a>
@@ -88,34 +90,24 @@
 </body>
 <script>
 <% if flash[:notice].present? %>
-message = "<%= flash[:notice]%>"
-type = 'success'
-notification(message, type)
+notification("<%= flash[:notice] %>", 'success')
 <%end%>
 
 <% if flash[:alert].present? %>
-message = "<%= flash[:alert]%>"
-type = 'warn'
-notification(message, type)
+notification("<%= flash[:alert] %>", 'warn')
 <%end%>
 
 <% if flash[:message].present?%>
-message = "<%= flash[:message]%>"
-type = 'info'
-notification(message, type)
+notification("<%= flash[:message] %>", 'info')
 <%end%>
 
 <% if flash[:errors].present?%>
 <% if flash[:errors].class == Array %>
 <%flash[:errors].each do |err|%>
-message = "<%= err.html_safe %>"
-type = 'error'
-notification(message, type)
+notification("<%= err.html_safe %>", 'error')
 <%end%>
 <% else %>
-message = "<%= flash[:errors] %>"
-type = 'error'
-notification(message, type)
+notification("<%= flash[:errors] %>", 'error')
 <% end %>
 <% end %>
 
@@ -126,7 +118,9 @@ function notification(message, type) {
         globalPosition: 'top center',
         autoHideDelay: 10000000,
         width: 500,
-        height: 300
+        height: 300,
+        autoHide: true,
+        autoHideDelay: 5000,
     });
 }
 
@@ -134,4 +128,5 @@ function setCsrfToken(xhr) {
     xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
 }
 </script>
+
 </html>

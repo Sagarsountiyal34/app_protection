@@ -16,14 +16,14 @@
     </div>
     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
 </div>
+<% content_for :page_scripts do %>
 <script>
 $(document).ready(function() {
     $('#customersDataTable').DataTable({
         "ordering": false
     });
 });
-</script>
-<script data-no-turbolink>
+
 $(document).on("click", ".suspend_resume_plan", function() {
     var customer_id = $(this).closest('tr').data('id');
     var plan_id = $(this).data('id');
@@ -37,13 +37,14 @@ $(document).on("click", ".suspend_resume_plan", function() {
             $('#customersDataTable').DataTable({
                 "ordering": false
             });
+            notification("Plan status has been changed", 'info');
         } else {
-            alert("Please try again.")
+            notification("Please try again", 'error');
         }
     }
 
     function onError(reponse) {
-        alert("Please try again.");
+        notification("Please try again", 'error');
     }
     suspend_resume_plan(plan_id, is_active, onSuccess, onError)
 });
@@ -63,3 +64,4 @@ function suspend_resume_plan(plan_id, is_active, successcb, errorcb) {
     });
 }
 </script>
+<% end %>
