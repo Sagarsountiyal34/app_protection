@@ -46,7 +46,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         redirect_to root_path
     else
       flash[:errors] = @user.errors.full_messages.first.squish
-      redirect_to root_path
+      redirect_to customers_create_customer_path
     end
   end
   # protected

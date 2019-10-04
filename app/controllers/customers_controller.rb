@@ -45,9 +45,7 @@ class CustomersController < ApplicationController
 				render json: {message: true, license_key: license_key, plan_id: activated_plan.id.to_s}, status: 200
 			end
 		else
-			render json: {
-				message: false
-			}, status: 500
+			render json: { message: false }, status: 500
 		end
 		 # u=User.includes(:active_plans).find_by(id: '5d8867ca58e53d38e2824ef1')
 	end
@@ -65,21 +63,23 @@ class CustomersController < ApplicationController
 			error = "User does not have a plan.activate any plan first"
 		end
 		if error.present? == false
-			render json: {	message: true,
-				plan_id: @cust_plan.id.to_s
-			}.to_json, status: 200
+			render json: { message: true, plan_id: @cust_plan.id.to_s }.to_json, status: 200
 		else
-			render json: {
-				message: error
-			}.to_json, status: 500
+			render json: { message: error }.to_json, status: 500
 		end
 	end
 
 	def suspend_resume_plan
 		status =  to_boolean(params[:is_active]) ? 'suspend' : 'active' 
 		if @cust_plan.present? and @cust_plan.update_attribute('status', status)
-			get_details_of_customers
-			render partial: 'customers/partial/customers'
+			if params['origin'] == 'customer_page'
+				@customer = User.includes(:active_plans).find(params[:id])
+				get_details_for_customer_page
+				render partial: 'customers/partial/customer_plan'
+			else
+				get_details_of_customers
+				render partial: 'customers/partial/customers'
+			end
 		else
 			render json: { message: false }.to_json, status: 200
 		end
@@ -88,6 +88,8 @@ class CustomersController < ApplicationController
 	def change_plan_validity
 		if @customer.get_future_plan.present?
 			render json: { message: "Customer has future plan setup.validity can't be extend.", status: false }.to_json, status: 200
+		elsif (Time.now.to_date - @cust_plan.start_date.to_date).to_i > 30
+			render json: { message: "Validity can't be changed after one month of activating plan..", status: false }.to_json, status: 200
 		else
 			end_date = @plan.get_end_date_for_change_validity(@cust_plan)
 			if @cust_plan.update_attributes(:plan_name => @plan.name, :plan_id => @plan.id.to_s, :end_date => end_date)
@@ -97,9 +99,8 @@ class CustomersController < ApplicationController
 			else
 				render json: { message: "Please try Again.", status: false }.to_json, status: 200
 			end
-		end	
+		end
 	end
-
 
 	private
 	def to_boolean(str)
@@ -115,6 +116,7 @@ class CustomersController < ApplicationController
 		@plans = Plan.all
 		@active_plan = @customer.get_active_plan
 		@future_plan = @customer.get_future_plan
+		@suspend_plan = @customer.get_suspend_plan
 	end
 
 	def get_details_of_customers

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>AppProtection</title>
     <%= csrf_meta_tags %>
@@ -12,7 +11,7 @@
 
 <body id="page-top">
     <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
-        <a class="navbar-brand mr-1" href="<%= root_path %>">Start Bootstrap</a>
+        <a class="navbar-brand mr-1" href="<%= root_path %>">App Protection</a>
         <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
             <i class="fas fa-bars"></i>
         </button>
@@ -36,13 +35,13 @@
         <ul class="sidebar navbar-nav">
             <li class="nav-item active">
                 <a class="nav-link" href="<%= root_path %>" >
-                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <i class="fas fa-users"></i>
                     <span>Customers</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="<%= customers_create_customer_path %>">
-                    <i class="fas fa-fw fa-chart-area"></i>
+                    <i class="fas fa-user-plus"></i>
                     <span>Create Customer</span></a>
             </li>
         </ul>

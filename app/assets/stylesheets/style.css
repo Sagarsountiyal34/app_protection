@@ -1,55 +1,54 @@
-.preview {
-    border-radius: 15px;
-    background-position: center;
-    width: 275px;
-    height: 100px;
-}
-
 .notifyjs-corner {
     left: 50% !important;
     transform: translate(-50%, 0);
 }
 
-#loader_wrap {
-    display: block;
-    margin: auto;
-    display: none;
-    text-align: center;
-}
-
-
-table tr td,
-table tr th {
+table tr td, table tr th {
     text-align: center;
     vertical-align: middle !important
-}
-
-#fromDesktopModalContent,
-#fromHistoryModalContent {
-    box-shadow: 0 0 10px 5px rgba(45, 125, 193, 0.6);
-    -moz-box-shadow: 0 0 10px 5px rgba(45, 125, 193, 0.6);
-    -webkit-box-shadow: 0 0 10px 5px rgba(45, 125, 193, 0.6);
-    -o-box-shadow: 0 0 10px 5px rgba(45, 125, 193, 0.6);
-}
-
-/*for increasing font awesome icon */
-#user {
-    font-size: 20px;
-}
-
-#cart {
-    font-size: 25px;
-}
-
-.fa-trash,
-.fa-eye {
-    font-size: 25px;
-}
-
-embed {
-    pointer-events: none;
+    /*font-size: 10px;*/
 }
 
 .lg-backdrop {
     z-index: 1050;
+}
+
+.license_key{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    width: 90px;
+    margin-left: 36px;
+}
+.send_license_key, .suspend_resume_plan, .suspend_resume_plan_customer{
+    background-color: green;
+    border-color: green;
+}
+
+/*table {
+    table-layout: fixed;
+}*/
+
+.change_validity_button{
+    width: 125px;
+    margin-left: -3px;
+}
+.customer_title
+{
+    font-weight: 800;
+    color: green;
+    display: inline-block;
+    padding-top: 5px;
+    font-size: 17px;
+}
+
+.warning_button
+{
+    background-color: red;
+    border-color: red;
+}
+.turbolinks-progress-bar {
+  height: 5px;
+  background-color: green;
 }

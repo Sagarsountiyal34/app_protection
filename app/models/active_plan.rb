@@ -20,4 +20,16 @@ class ActivePlan
     self.update_attribute('status', 'expired') if !is_valid
     return !is_valid
   end
+
+  def have_to_show_change_validity?
+    (Time.now.to_date - self.start_date.to_date).to_i < 30
+  end
+
+  def is_active_plan_used?(mac_address)
+    self.mac_address.present? and self.mac_address != mac_address
+  end
+
+  def is_mac_address_present?
+    self.mac_address.present?
+  end
 end

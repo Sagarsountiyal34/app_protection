@@ -1,4 +1,4 @@
-<table class="table table-bordered" id="customersDataTable" width="100%" cellspacing="0">
+<table class="table table-bordered" id="customersDataTable" width="100%" cellspacing="0" data-turbolinks="false">
     <thead>
         <tr>
             <th>Email</th>
@@ -24,7 +24,7 @@
                 <% active_plan = customer.get_active_plan %>
                 <% suspend_plan = customer.get_suspend_plan%>
                 <% if active_plan.present? %>
-                <button name="button" type="submit" class="btn btn-primary suspend_resume_plan" data-is-active=true data-id="<%= active_plan.id %>">
+                <button name="button" type="submit" class="btn btn-primary suspend_resume_plan warning_button" data-is-active=true data-id="<%= active_plan.id %>">
                     Suspend
                 </button>
                 <% elsif suspend_plan.present? %>
@@ -36,8 +36,8 @@
                 <% end%>
             </td>
             <td>
-                <a class="btn btn-primary " href="<%= customer_show_path(customer.id) %>" data-id="<%= %>">
-                    Manage Plan</a>
+                <a class="btn" style="color:green;" href="<%= customer_show_path(customer.id) %>" data-turbolinks-action="replace">
+                    <u>Manage Plan</u></a>
             </td>
         </tr>
         <% end %>

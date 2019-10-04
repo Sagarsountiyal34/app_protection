@@ -1,7 +1,10 @@
 <!-- Breadcrumbs-->
 <ol class="breadcrumb">
     <li class="breadcrumb-item">
-        <a href="#">Customer</a>
+        <a href="<%= root_path %>">Dashboard</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="<%= root_path %>">Customers</a>
     </li>
     <li class="breadcrumb-item active">
         <%= @customer.first_name + ' ' + @customer.last_name %>
@@ -9,52 +12,44 @@
 </ol>
 <div class="card mb-3">
     <div class="card-header">
-        Customer Info</div>
+        <b class="customer_title">Customer Info</b>
+    </div>
     <div class="card-body">
         <div class="table-responsive customer_table_wrap">
             <%= render "customers/partial/customer_info" %>
         </div>
     </div>
 </div>
-<div class="card mb-3">
-    <div class="card-header">
-        Customer Plans</div>
-    <div class="card-body">
-        <div class="table-responsive" id="customer_plans" data-id="<%= @customer.id %>">
-            <%= render "customers/partial/customer_plan" %>
-        </div>
-    </div>
+<div class="card mb-3" id="customer_plans" data-id="<%= @customer.id %>">
+    <%= render "customers/partial/customer_plan" %>
 </div>
-<script data-turbolinks-eval="false">
-$(document).ready(function() {
-    initialize_customer_dataTable();
-});
+<script>
+// function initialize_customer_dataTable() {
+//     $('#customerDataTable').DataTable({
+//         "ordering": false,
+//     })
+// }
 
-function initialize_customer_dataTable() {
-    $('#customerDataTable').DataTable({
-        "ordering": false
-    });
-}
 $(document).on("click", ".activate_future_plan", function() {
-    if (confirm('Are you sure you want to Activate this plan for future?')) {
+    if (confirm('Are you sure you want to Activate this plan.?')) {
         var self = $(this);
         var customer_id = $('#customer_plans').data('id');
         var plan_id = $(this).data('id');
-        $(this).parents('.dropdown_plans').find('.future_plan').attr('disabled', 'true');
+        $(this).parents('.future_dropdown_plans').find('.future_plan').attr('disabled', 'true');
 
         function onSuccess(data) {
             if (data != null) {
                 $('#customer_plans').html(data);
-                initialize_customer_dataTable();
+                // initialize_customer_dataTable();
                 alert("Plan created successfully")
             } else {
-                $(this).parents('.dropdown_plans').find('.future_plan').removeAttr('disabled');
+                $(this).parents('.future_dropdown_plans').find('.future_plan').removeAttr('disabled');
                 alert("Please try again.")
             }
         }
 
         function onError(reponse) {
-            $(this).parents('.dropdown_plans').find('.future_plan').removeAttr('disabled');
+            $(this).parents('.future_dropdown_plans').find('.future_plan').removeAttr('disabled');
             alert("Please try again.");
         }
         activate_plan_for_future(customer_id, plan_id, onSuccess, onError);
@@ -90,7 +85,7 @@ $(document).on("click", ".change_validity", function() {
                 alert(data['message']);
             } else if (data != null) {
                 $('#customer_plans').html(data);
-                initialize_customer_dataTable();
+                // initialize_customer_dataTable();
                 alert("Plan changed successfully.")
             }
         }
@@ -119,32 +114,34 @@ function change_validity_of_plan(customer_id, new_plan_id, active_plan_id, succe
 }
 
 $(document).on("click", ".send_license_key", function() {
-    var customer_id = $('#customer_plans').data('id');
-    var plan_id = $(this).data('id');
-    var self = this
-    $(this).text('Please Wait');
-    $(this).attr('disabled', true);
-    $.ajax({
-        type: "POST",
-        beforeSend: setCsrfToken,
-        url: "/send_license_key",
-        data: { id: customer_id, cust_plan_id: plan_id },
-        success: function(data) {
-            if (data['message'] == true) {
-                alert("License Key successfully sent via email");
-                $(self).removeAttr('disabled');
-                $(self).text('Resend Key');
-            } else {
-                $(self).text('Send Key');
+    if (confirm('Are you sure you want to send License key?')) {
+        var customer_id = $('#customer_plans').data('id');
+        var plan_id = $(this).data('id');
+        var self = this
+        $(this).text('Please Wait');
+        $(this).attr('disabled', true);
+        $.ajax({
+            type: "POST",
+            beforeSend: setCsrfToken,
+            url: "/send_license_key",
+            data: { id: customer_id, cust_plan_id: plan_id },
+            success: function(data) {
+                if (data['message'] == true) {
+                    alert("License Key successfully sent via email");
+                    $(self).removeAttr('disabled');
+                    $(self).text('Resend License key to Email');
+                } else {
+                    $(self).text('Send License key to Email');
+                    $(self).removeAttr('disabled');
+                }
+            },
+            error: function(exception) {
+                alert("Please try again.");
+                $(self).text('Send License key to Email');
                 $(self).removeAttr('disabled');
             }
-        },
-        error: function(exception) {
-            alert("Please try again.");
-            $(self).text('Send Key');
-            $(self).removeAttr('disabled');
-        }
-    });
+        });
+    }
 });
 
 function activate_plan(customer_id, plan_id, successcb, errorcb) {
@@ -161,13 +158,54 @@ function activate_plan(customer_id, plan_id, successcb, errorcb) {
         }
     });
 }
-</script>
-<style>
-table {
-    /*margin: 0 auto;
-  width: 100%;
-  clear: both;
-  border-collapse: collapse;*/
-    table-layout: fixed;
+
+$(document).on("click", ".license_key", function() {
+    var value = $(this).text();
+    var temp = $("<input>");
+    $("body").append(temp);
+    temp.val(value).select();
+    document.execCommand("copy");
+    temp.remove();
+    alert("License key copied");
+});
+
+// $(document).ready(function() {
+//     initialize_customer_dataTable();
+// });
+
+$(document).on("click", ".suspend_resume_plan_customer", function() {
+    var customer_id = $('#customer_plans').data('id');
+    var plan_id = $(this).data('id');
+    var is_active = $(this).data('isActive');
+    $(this).text('Please Wait');
+    $(this).attr('disabled', true);
+
+    function onSuccess(data) {
+        if (data != null) {
+            $('#customer_plans').html(data);
+        } else {
+            alert("Please try again.")
+        }
+    }
+
+    function onError(reponse) {
+        alert("Please try again.");
+    }
+    suspend_resume_plan_customer(customer_id, plan_id, is_active, onSuccess, onError)
+});
+
+function suspend_resume_plan_customer(cust_id, plan_id, is_active, successcb, errorcb) {
+    $.ajax({
+        type: "POST",
+        beforeSend: setCsrfToken,
+        url: "/suspend_resume_plan",
+        data: { id: cust_id, is_active: is_active, cust_plan_id: plan_id, origin: 'customer_page' },
+        success: function(data) {
+            if (successcb) successcb(data);
+        },
+        error: function(exception) {
+            if (successcb) successcb(data);
+        }
+    });
 }
-</style>
+</script>
