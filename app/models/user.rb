@@ -23,7 +23,7 @@ class User
   field :city, type: String, default: ""
   field :country, type: String, default: ""
   field :gender, type: String, default: ""
-
+  field :last_notification_sent_time, type: DateTime, default: ""
   has_many :active_plans, dependent: :destroy
   
   ## Rememberable
@@ -58,6 +58,16 @@ class User
 
   def get_suspend_plan
     self.active_plans.where(:status => 'suspend').first
+  end
+
+  def is_today_notification_sent?
+    # self
+    last_time = user.last_notification_sent_time
+    if last_time.present? 
+      (last_time - Time.now.to_date).to_f.to_i == 0
+    else
+      return false
+    end
   end
 
   protected
