@@ -1,6 +1,7 @@
 class ApiController < ActionController::API
 	# We depend on our auth_token module here.
 	
+	require 'request_apis'
   	protected
 
 		def render500(message="Something went wrong. Please try again after sometime.")
