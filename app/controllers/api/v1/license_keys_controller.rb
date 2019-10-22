@@ -40,7 +40,7 @@ module Api
 					render500
 				end
 			end
-			def notification_receive
+			def send_notification_message
 				begin
 					license_key = params[:license_key]
 					if license_key.present?

@@ -1,0 +1,1 @@
+ User.create!(:email => "admin@gmail.com", :password => 'admin1234', :role => 'admin')

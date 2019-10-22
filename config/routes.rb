@@ -27,7 +27,9 @@ Rails.application.routes.draw do
     namespace 'api' do
         namespace 'v1' do
             post 'license_keys/check_license_key_validity', to: 'license_keys#check_license_key_validity'
+            post 'license_keys/send_notification_message', to: 'license_keys#send_notification_message'
         end
     end
     
 end
+
