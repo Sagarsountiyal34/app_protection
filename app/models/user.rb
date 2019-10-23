@@ -70,6 +70,10 @@ class User
     end
   end
 
+  def is_notification_sent_within_hour?(hour)
+    ((Time.now) - self.last_notification_sent_time) / 1.hours > hour
+  end
+
   protected
   def password_required?
     return false if skip_password_validation
