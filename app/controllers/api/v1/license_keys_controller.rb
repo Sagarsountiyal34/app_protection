@@ -77,11 +77,11 @@ module Api
 
 			private
 			def render_not_found(message="Something is wrong.")
-				render status: , json: { message: message, status: false }
+				render status: 200, json: { message: message, status: false }
 			end
 
 			def render500(message="Something went wrong. Please try again after sometime.")
-				render status: 500, json: { message: message,status: false }
+				render status: 200, json: { message: message,status: false }
 			end
 
 		end
