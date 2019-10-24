@@ -8,8 +8,8 @@ module Api
 					status = false
 					if license_key.present? and mac_address.present?
 						active_plan = ActivePlan.find_by(:license_key => license_key)
-						user =  User.find(active_plan.user_id)
 						if active_plan.present?
+							user =  User.find(active_plan.user_id)
 							if active_plan.is_active_plan_used?(mac_address)
 								render_not_found("This key is already in used  by some other devise.")
 							else
@@ -29,7 +29,6 @@ module Api
 								elsif status
 									no_of_days_left = (ActivePlan.last.end_date.to_date - Time.now.to_date).to_i
 									message = ""
-									user =  User.find(active_plan.user_id)
 									if no_of_days_left <= 15 && !user.is_notification_sent_within_hour?(3)
 											user.update_attribute(:last_notification_sent_time => Time.now)
 											message = "Plan will expire in #{no_of_days_left}"

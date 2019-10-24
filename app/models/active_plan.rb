@@ -15,10 +15,11 @@ class ActivePlan
   validates :status, inclusion: { in: ['suspend', 'active', 'expired', 'future_plan'] }
 
   def is_expired?
-    range  = self.start_date..(self.end_date)
-    is_valid = range === Time.now
-    self.update_attribute('status', 'expired') if !is_valid
-    return !is_valid
+    # range  = self.start_date..(self.end_date)
+    # is_valid = range === Time.now
+    # self.update_attribute('status', 'expired') if !is_valid
+    # return !is_valid
+    self.status == 'expired'
   end
 
   def have_to_show_change_validity?
