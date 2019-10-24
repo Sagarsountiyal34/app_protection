@@ -22,6 +22,10 @@ class ActivePlan
     self.status == 'expired'
   end
 
+  def is_suspended?
+    self.status == 'suspend'
+  end
+
   def have_to_show_change_validity?
     (Time.now.to_date - self.start_date.to_date).to_i < 30
   end
