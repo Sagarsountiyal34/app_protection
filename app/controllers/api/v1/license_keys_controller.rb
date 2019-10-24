@@ -42,10 +42,10 @@ module Api
 							render_not_found('Invalid Key.')
 						end
 					else
-						render_not_found('Please send License Key and Mac Address.')
+						render_not_found('Please send License Key.')
 					end
 				rescue Exception => e
-					render500
+					render500(e.message)
 				end
 			end
 
@@ -80,7 +80,7 @@ module Api
 			end
 
 			def render500(message="Something went wrong. Please try again after sometime.")
-				render status: 200, json: { message: message,status: false }
+				render status: 200, json: { message: message, status: false }
 			end
 
 		end
