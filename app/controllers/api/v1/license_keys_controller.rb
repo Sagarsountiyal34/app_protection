@@ -16,7 +16,7 @@ module Api
 								if !active_plan.is_mac_address_present?
 									active_plan.mac_address = mac_address
 									if active_plan.save
-										user.update_attribute(:last_notification_sent_time => Time.now)
+										user.update_attribute('last_notification_sent_time', Time.now)
 										status = true
 									end
 								else
@@ -29,9 +29,10 @@ module Api
 								elsif status
 									no_of_days_left = (ActivePlan.last.end_date.to_date - Time.now.to_date).to_i
 									message = ""
-									if no_of_days_left <= 15 && !user.is_notification_sent_within_hour?(3)
-											user.update_attribute(:last_notification_sent_time => Time.now)
-											message = "Plan will expire in #{no_of_days_left}"
+									user.reload
+									if no_of_days_left <= 15 && user.is_notification_sent_within_hour?(3)
+											user.update_attribute('last_notification_sent_time', Time.now)
+											message = "Plan will expire in #{no_of_days_left} days."
 									end		
 									render status: "200", json: { message: message, status: true, no_of_days_left: no_of_days_left, plan_name: active_plan.plan_name, expiry_date: active_plan.end_date.to_date }
 								else
