@@ -166,17 +166,19 @@ test:
   options:
     raise_not_found_error: false
 production:
-  # Configure available database clients. (required)
   clients:
-    # Defines the default client. (required)
     default:
-      # Defines the name of the default database that Mongoid can connect to.
-      # (required).
-      database: app_protection_development
-      # Provides the hosts the default client can connect to. Must be an array
-      # of host:port pairs. (required)
+      database: review_scrapper_production
       hosts:
         - localhost:27017
       options:
+                read:
+          mode: :primary
+        max_pool_size: 1
+        user: app_protection_user
+        password: app_protection$!123
+        roles:
+          - dbOwner
   options:
     raise_not_found_error: false
+
