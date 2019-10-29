@@ -30,7 +30,7 @@ module Api
 									no_of_days_left = (ActivePlan.last.end_date.to_date - Time.now.to_date).to_i
 									message = ""
 									user.reload
-									if no_of_days_left <= 15 && user.is_notification_sent_within_hour?(3)
+									if no_of_days_left <= 15 && !user.is_notification_sent_within_hour?(3)
 											user.update_attribute('last_notification_sent_time', Time.now)
 											message = "Plan will expire in #{no_of_days_left} days."
 									end		
