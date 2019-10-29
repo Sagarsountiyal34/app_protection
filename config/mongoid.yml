@@ -165,20 +165,26 @@ test:
         max_pool_size: 1
   options:
     raise_not_found_error: false
+
 production:
   clients:
     default:
-      database: review_scrapper_production
+      database: app_protection_production
       hosts:
         - localhost:27017
       options:
-                read:
+        read:
           mode: :primary
         max_pool_size: 1
+        #The name of the user for authentication.
         user: app_protection_user
+
+        #The password of the user for authentication.
         password: app_protection$!123
+
+        #The user's database roles.
         roles:
-          - dbOwner
+          - 'dbOwner'
   options:
     raise_not_found_error: false
 
