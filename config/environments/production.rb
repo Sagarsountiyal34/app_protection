@@ -85,8 +85,7 @@ Rails.application.configure do
     logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
-
-  config.action_mailer.default_url_options = { host: 'http://139.59.57.169/'}
+  config.action_mailer.default_url_options = { host: 'http://139.59.57.169'}
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
    :address => "smtp.gmail.com",
