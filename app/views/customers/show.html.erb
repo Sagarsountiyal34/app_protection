@@ -138,14 +138,14 @@ $(document).on("click", ".send_license_key", function() {
                     $(self).removeAttr('disabled');
                     $(self).text('Resend License key to Email');
                 } else {
-                    notification("Please try again.", "error");
+                    notification(data['message'], "error");
                     $(self).text('Send License key to Email');
                     $(self).removeAttr('disabled');
                 }
             },
             error: function(exception) {
                 // alert("Please try again.");
-                notification("Please try again.", "error");
+                notification("Please try again..", "error");
                 $(self).text('Send License key to Email');
                 $(self).removeAttr('disabled');
             }

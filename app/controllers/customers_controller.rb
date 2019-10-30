@@ -64,7 +64,7 @@ class CustomersController < ApplicationController
 		if error.present? == false
 			render json: { message: true, plan_id: @cust_plan.id.to_s }.to_json, status: 200
 		else
-			render json: { message: error }.to_json, status: 500
+			render json: { message: error }.to_json, status: 200
 		end
 	end
 
