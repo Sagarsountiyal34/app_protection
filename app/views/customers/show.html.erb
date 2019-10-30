@@ -135,6 +135,7 @@ $(document).on("click", ".send_license_key", function() {
                 if (data['message'] == true) {
                     // alert("License Key successfully sent via email");
                     notification("License Key successfully sent via email", "info");
+                    console.log(data['message']);
                     $(self).removeAttr('disabled');
                     $(self).text('Resend License key to Email');
                 } else {
