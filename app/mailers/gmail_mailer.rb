@@ -1,5 +1,5 @@
 class GmailMailer < ApplicationMailer
-	default from: "ashish@codegaragetech.com"
+	default from: "elvislennon1242@gmail.com"
 
 	def license_key_email(customer, license_key=nil)
     	@customer = customer
