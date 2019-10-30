@@ -23,9 +23,9 @@ module Api
 									status = true
 								end
 								if active_plan.is_expired?
-									render status: "200", json: { message: "Plan has been expired.", status: false }
+									render status: "200", json: { message: "Plan has been expired.Please contact us for a new key.", status: false }
 								elsif active_plan.is_suspended?
-									render status: "200", json: { message: "Your plan has been suspended.", status: false }
+									render status: "200", json: { message: "Your plan has been suspended.Please contact us for confirmation and restart the app.", status: false }
 								elsif status
 									no_of_days_left = (ActivePlan.last.end_date.to_date - Time.now.to_date).to_i
 									message = ""

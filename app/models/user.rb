@@ -72,6 +72,9 @@ class User
 
   def is_notification_sent_within_hour?(hour)
     (((Time.now) - self.last_notification_sent_time) / 1.hours).round < hour
+
+  def is_notification_sent_within_minute?(minute)
+    (((Time.now) - self.last_notification_sent_time) / 1.minutes).round < minute
   end
 
   protected
