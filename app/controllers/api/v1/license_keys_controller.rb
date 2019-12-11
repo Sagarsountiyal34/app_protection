@@ -6,12 +6,26 @@ module Api
 					license_key = params[:license_key]
 					mac_address = params[:mac_address]
 					status = false
-					if license_key.present? and mac_address.present?
-						active_plan = ActivePlan.find_by(:license_key => license_key)
+					# active_plan = ActivePlan.find_by(:mac_address => mac_address)
+					message = ""
+					active_plan = nil
+					if mac_address.present?
+						if license_key.present?
+							active_plan = ActivePlan.find_by(:license_key => license_key)
+							message = "Invalid License Key" if !active_plan.present?
+							message ="Please also send License key." if !license_key.present?
+						else
+							active_plan = ActivePlan.find_by(:mac_address => mac_address)
+							if active_plan.present?
+								status = true
+							else
+								message = "Plan not present with this mac address" 
+							end
+						end
 						if active_plan.present?
 							user =  User.find(active_plan.user_id)
 							if active_plan.is_active_plan_used?(mac_address)
-								render_not_found("This key is already in used  by some other devise.")
+								render status: 200, json: { message: "This key is already in used  by some other devise.", status: true }
 							else
 								if !active_plan.is_mac_address_present?
 									active_plan.mac_address = mac_address
@@ -40,10 +54,10 @@ module Api
 								end
 							end
 						else
-							render_not_found('Invalid Key.')
+							render_not_found(message)
 						end
 					else
-						render_not_found('Please send License Key.')
+						render_not_found('Please send mac address.')
 					end
 				rescue Exception => e
 					render500(e.message)
