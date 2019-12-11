@@ -10,22 +10,17 @@ module Api
 					message = ""
 					active_plan = nil
 					if mac_address.present?
-						if license_key.present?
-							active_plan = ActivePlan.find_by(:license_key => license_key)
-							message = "Invalid License Key" if !active_plan.present?
-							message ="Please also send License key." if !license_key.present?
+						active_plan = ActivePlan.find_by(:mac_address => mac_address)
+						if active_plan.present?
+							status = true
 						else
-							active_plan = ActivePlan.find_by(:mac_address => mac_address)
-							if active_plan.present?
-								status = true
-							else
-								message = "Plan not present with this mac address" 
-							end
+							active_plan = ActivePlan.find_by(:license_key => license_key || "")
+							message = "Invalid/Empty License Key" if !active_plan.present?
 						end
 						if active_plan.present?
 							user =  User.find(active_plan.user_id)
 							if active_plan.is_active_plan_used?(mac_address)
-								render status: 200, json: { message: "This key is already in used  by some other devise.", status: true }
+								render status: 200, json: { message: "This key is already in used  by some other devise.", status: false }
 							else
 								if !active_plan.is_mac_address_present?
 									active_plan.mac_address = mac_address
@@ -50,7 +45,7 @@ module Api
 									end		
 									render status: "200", json: { message: message, status: true, no_of_days_left: no_of_days_left, plan_name: active_plan.plan_name, expiry_date: active_plan.end_date.to_date }
 								else
-									render_not_found
+									render_not_found()
 								end
 							end
 						else
